@@ -1,0 +1,28 @@
+
+/*arrumando o banner*/
+.banner {
+    min-height: 50vh;
+}
+
+/*OCultando o menu burger*/
+.menu-burger {
+    display: none;
+}
+
+/*Ajustando o menu*/
+.menu .menu-items { 
+    position: static;
+    min-height: auto; 
+}
+
+.menu .menu-items ul {
+    display: flex;
+    gap: 1rem;
+}
+
+
+.menu .menu-items ul a {
+    font-size: 2.5rem;
+    transition: border-radius 0.5s ease;
+}
+
