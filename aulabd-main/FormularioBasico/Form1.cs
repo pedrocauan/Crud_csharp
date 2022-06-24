@@ -7,26 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+using System.Data.SqlClient; //Biblioteca do SQL server
 
 namespace FormularioBasico
 {
 
-    public class Pessoa
-    {
-        public bool VerificaIdade(int idade)
-        {
-            if(idade >= 18)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-        }
-    }
     public partial class func : Form
     {
        
@@ -34,15 +19,15 @@ namespace FormularioBasico
         {
             InitializeComponent();
         }
-
-        int cd_func = 0; //variavel que vai guardar o código
+        //===== Variaveis globais ====
+        int cd_func = 0; //guarda o código da coluna na tabela
         string funcionario = "";
         string cpf = "";
-        string sql; //Variavel que vai guardar o comando sql que vai ler a db
-
-        Pessoa teste = new Pessoa();
-        teste.VerificaIdade(18);
-
+        string sql; //guarda o comando sql que vai ler a db
+        
+        //===Objetos que vão interagir com a database no sql server==
+        
+        //Conexão(abre e fecha o db): Data source -> servidor, Initial Catalog = Database utilizada, User ID = login da db, password -> senha da database 
         SqlConnection cn = new SqlConnection("Data Source=lab1-20;Initial Catalog=bd_turmaB;User ID=sa;password=1234567"); //Conecta com o bd no sqlserver
         SqlCommand cm = new SqlCommand(); //Faz os comandos sql
         SqlDataReader rd; //lê o bd
@@ -60,9 +45,9 @@ namespace FormularioBasico
         {
             sql = "select * from tbl_funcionario where cd_func = " + cd_func.ToString();
             cn.Open(); // abre o db
-            cm.Connection = cn; //Conexão db aberto
+            cm.Connection = cn; //Conecta a database aberta
             cm.CommandText = sql;//Comando sql que será inserido no db
-            rd = cm.ExecuteReader(); //Executa  o comando  
+            rd = cm.ExecuteReader(); //Executa  o comando pra ler
 
             //Ve se o registro existe na tabela
             if (rd.HasRows)
@@ -71,7 +56,7 @@ namespace FormularioBasico
                 return false;
 
         }
-
+       
         public void ExecutaComandoSql(SqlConnection conexao, string comando)
         {
             cm.Connection = conexao;
@@ -79,7 +64,7 @@ namespace FormularioBasico
             cm.ExecuteNonQuery();
         }
 
-        //btnDelete
+        //btnDelete -> BOTÃO EXCLUIR
         private void button4_Click(object sender, EventArgs e)
         {
             try
@@ -104,7 +89,7 @@ namespace FormularioBasico
                         cn.Open(); //abre conexão
                         sql = "delete from tbl_funcionario where cd_func = @cod"; //comando sql pra deletar registro
                         cm.Parameters.Clear(); //Limpa os parametros  inseridos anteriormente
-                        cm.Parameters.Add("@cod", SqlDbType.Int).Value = cd_func; //Substitui o @cod pela variavel cd_func
+                        cm.Parameters.Add("@cod", SqlDbType.Int).Value = cd_func; //Substitui o @cod pelo valor da variavel cd_func
 
                         //Executa o comando de excluir no banco de dados.
                         ExecutaComandoSql(cn, sql);
@@ -119,8 +104,6 @@ namespace FormularioBasico
             catch (Exception error)
             {
                 MessageBox.Show(error.Message);
-
-               
             }
             finally
             {
@@ -130,27 +113,21 @@ namespace FormularioBasico
 
         }
 
-        //In
-     
-
-        //btnChange
+        //btnChange -> BOTÃO DE ALTERAR REGISTRO
         private void button3_Click(object sender, EventArgs e)
         {
             cd_func = TrataCodigo(cd_func);
             funcionario = TrataFunc(txtFunc.Text);
             cpf = TrataCpf(txtCpf.Text);
             //se o usuario clicar em Sim no botao de aviso ele cai na condição que altera o registro do bd
-            bool confirmacao = MessageBox.Show("Deseja alterar o registro??",
-                "AVISO",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+            bool confirmacao = MessageBox.Show("Deseja alterar o registro??","AVISO",MessageBoxButtons.YesNo,MessageBoxIcon.Question,MessageBoxDefaultButton.Button2) == DialogResult.Yes;
             try {
-
+                //Se não tiver registro ele da erro
                 if (!SelectTable())
-                    MessageBox.Show("Código não cadastrado!!",  "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Código não cadastrado!!",  "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);              
                 else
                 {
+                    //fecha a database caso ela estiver aberta
                     if (!rd.IsClosed)
                         cn.Close();
                      if (confirmacao)
@@ -201,7 +178,7 @@ namespace FormularioBasico
             return cod;
         }
 
-        // =====TRATA OS ERROS DO CÓDIGO ========
+        // =====TRATA OS ERROS DO CAMPO FUNCIONARIO ========
         public string TrataFunc(string func)
         {
             
@@ -289,7 +266,7 @@ namespace FormularioBasico
             }
 
         }
-
+        //Reseta os campos depois do registro ser feito
         private void LimparCampos()
         {
             txtCodigo.Clear();
@@ -299,23 +276,7 @@ namespace FormularioBasico
 
         //btnSearch
         private void button1_Click(object sender, EventArgs e)
-
-        {
-
-
-            bool usuario_confirmou = MessageBox.Show("Mensagem", "titulo", MessageBoxButtons.YesNo) == DialogResult.Yes;
-            if(usuario_confirmou)
-            {
-                MessageBox.Show("o resultado é sim");
-
-            }
-            else
-            {
-                MessageBox.Show("o resultado é nao");
-            }
-            cd_func = TrataCodigo(cd_func);//Pegando o código
-
-            
+        {           
             try
             {
          
